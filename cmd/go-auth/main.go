@@ -3,12 +3,10 @@ package main
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"github.com/square/go-jose/v3"
-	"github.com/square/go-jose/v3/jwt"
+	"github.com/square/go-jose"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 )
 
 var log *logrus.Logger
@@ -23,7 +21,7 @@ func main() {
 
 	// todo: generate this on the fly if file not provided
 	// bash `jose-util generate-key --alg=RS256 --use=sig` will generate two jwk files, merge them together into jwks.json
-	b, err := ioutil.ReadFile("jwks.json")
+	b, err := ioutil.ReadFile("../../jwks.json")
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -72,27 +70,27 @@ func main() {
 	})
 
 	// Prepare a JWT signer for the oauth/token endpoint
-	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: prjwk.Key}, (&jose.SignerOptions{}).WithType("JWT"))
-	if err != nil {
-		panic(err)
-	}
+	//sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: prjwk.Key}, (&jose.SignerOptions{}).WithType("JWT"))
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	// Generate a token for testing purposes
 	// TODO: Let users specifcy claims in the POST request
 	http.HandleFunc("/oauth/token", func (w http.ResponseWriter, r *http.Request) {
-		cl := jwt.Claims{
-			Subject:   "9999",
-			Issuer:    "auth",
-			Expiry: jwt.NewNumericDate(time.Now().UTC().Add(time.Hour)),
-			Audience:  jwt.Audience{"admin"},
-		}
-		raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(raw))
+		//cl := jwt.Claims{
+		//	Subject:   "9999",
+		//	Issuer:    "auth",
+		//	Expiry: jwt.NewNumericDate(time.Now().UTC().Add(time.Hour)),
+		//	Audience:  jwt.Audience{"admin"},
+		//}
+		//raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
+		//if err != nil {
+		//	w.WriteHeader(http.StatusInternalServerError)
+		//	w.Write([]byte(err.Error()))
+		//}
+		//w.Header().Set("Content-Type", "application/json")
+		//w.Write([]byte(raw))
 	})
 
 	// Start web cookies
